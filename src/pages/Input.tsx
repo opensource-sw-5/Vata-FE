@@ -1,43 +1,47 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+const [isLoading, setIsLoading] = useState(false);
 
-const Input = () => {
-  const navigate = useNavigate();
-  const [form, setForm] = useState({
-    gender: "",
-    mbti: "",
-    hobby: "",
-    otherHobby: "",
-    characterType: "",
-    styleType: "",
-    etc: "",
-  });
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
 
-  useEffect(() => {
-    const username = localStorage.getItem("username");
-    const token = localStorage.getItem("accessToken");
+  const username = localStorage.getItem("username") || "";
+  const token = localStorage.getItem("accessToken") || "";
+  const usageKey = `usageCount_${username}`;
+  const currentCount = parseInt(localStorage.getItem(usageKey) || "0", 10);
 
-    if (!username) {
-      alert("로그인이 필요합니다.");
-      navigate("/login");
-    } else if (!token) {
-      alert("Access Token을 먼저 설정해주세요.");
-      navigate("/token");
+  if (currentCount >= 8) {
+    alert("⚠️ 더 이상 이미지를 생성할 수 없습니다. (최대 8회)");
+    return;
+  }
+
+  setIsLoading(true);
+
+  try {
+    const hobbyToSend = form.hobby === "직접입력" ? form.otherHobby : form.hobby;
+
+    if (process.env.REACT_APP_MOCK_MODE === "true") {
+      await new Promise((res) => setTimeout(res, 1000));
+      localStorage.setItem("generatedImageUrl", "https://via.placeholder.com/400x400.png?text=Avatar+Result");
+    } else {
+      const response = await fetch("/api/profile/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ ...form, hobby: hobbyToSend }),
+      });
+
+      if (!response.ok) throw new Error("이미지 생성 실패");
+
+      const imageUrl = await response.text();
+      localStorage.setItem("generatedImageUrl", imageUrl);
     }
-  }, [navigate]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  return (
-    <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-yellow-100 to-pink-100">
-      <form className="bg-white p-10 rounded-2xl shadow-xl w-[90vw] max-w-[500px] flex flex-col gap-5">
-        <h2 className="text-3xl font-bold text-center text-pink-600">프로필 생성 입력</h2>
-        {/* 기존 UI에 상태값 연결 및 hobby === '직접입력' 조건 처리 */}
-      </form>
-    </div>
-  );
+    localStorage.setItem(usageKey, (currentCount + 1).toString());
+    navigate("/result");
+  } catch (err) {
+    alert("⚠️ 이미지 생성 중 오류가 발생했습니다.");
+  } finally {
+    setIsLoading(false);
+  }
 };
-
-export default Input;
