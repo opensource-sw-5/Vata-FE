@@ -1,12 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 const AccessToken = () => {
   const [token, setToken] = useState("");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const username = localStorage.getItem("username");
+    if (!username) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+    }
+  }, [navigate]);
 
   const handleSave = () => {
     localStorage.setItem("accessToken", token);
     console.log("저장된 토큰:", token);
     alert("Access Token이 저장되었습니다!");
+    navigate("/"); // 홈으로 이동
   };
 
   return (
