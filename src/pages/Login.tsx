@@ -1,7 +1,16 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
+  const [form, setForm] = useState({
+    username: "",
+    password: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
 
   return (
     <div className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-yellow-100 to-pink-100">
@@ -14,6 +23,8 @@ const Login = () => {
           type="text"
           name="username"
           placeholder="아이디"
+          value={form.username}
+          onChange={handleChange}
           className="border rounded px-4 py-2"
           required
         />
@@ -22,6 +33,8 @@ const Login = () => {
           type="password"
           name="password"
           placeholder="비밀번호"
+          value={form.password}
+          onChange={handleChange}
           className="border rounded px-4 py-2"
           required
         />
