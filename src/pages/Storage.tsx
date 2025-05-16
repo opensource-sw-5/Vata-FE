@@ -1,13 +1,8 @@
-const handleDownload = (url: string, index: number) => {
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `avatar_${index + 1}.png`;
-  link.click();
-};
+const navigate = useNavigate();
 
 <button
-  onClick={() => handleDownload(img, index)}
-  className="mt-4 bg-pink-500 hover:bg-pink-600 text-white font-semibold py-1.5 px-6 rounded-full"
+  onClick={() => navigate("/")}
+  className="mt-12 bg-gray-700 hover:bg-gray-800 text-white px-8 py-3 rounded-full shadow-md text-lg transition"
 >
-  다운로드
+  홈으로
 </button>
