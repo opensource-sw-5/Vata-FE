@@ -1,47 +1,18 @@
-const [isLoading, setIsLoading] = useState(false);
+ useEffect(() => {
+    const email = localStorage.getItem("email");
+    const token = localStorage.getItem("accessToken");
 
-const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-
-  const username = localStorage.getItem("username") || "";
-  const token = localStorage.getItem("accessToken") || "";
-  const usageKey = `usageCount_${username}`;
-  const currentCount = parseInt(localStorage.getItem(usageKey) || "0", 10);
-
-  if (currentCount >= 8) {
-    alert("⚠️ 더 이상 이미지를 생성할 수 없습니다. (최대 8회)");
-    return;
-  }
-
-  setIsLoading(true);
-
-  try {
-    const hobbyToSend = form.hobby === "직접입력" ? form.otherHobby : form.hobby;
-
-    if (process.env.REACT_APP_MOCK_MODE === "true") {
-      await new Promise((res) => setTimeout(res, 1000));
-      localStorage.setItem("generatedImageUrl", "https://via.placeholder.com/400x400.png?text=Avatar+Result");
-    } else {
-      const response = await fetch("/api/profile/generate", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ ...form, hobby: hobbyToSend }),
-      });
-
-      if (!response.ok) throw new Error("이미지 생성 실패");
-
-      const imageUrl = await response.text();
-      localStorage.setItem("generatedImageUrl", imageUrl);
+    if (!email) {
+      alert("로그인이 필요합니다.");
+      navigate("/login");
+    } else if (!token) {
+      alert("Access Token을 먼저 설정해주세요.");
+      navigate("/token");
     }
+  }, [navigate]);  const email = localStorage.getItem("email") || "";
+    const token = localStorage.getItem("accessToken") || "";
 
-    localStorage.setItem(usageKey, (currentCount + 1).toString());
-    navigate("/result");
-  } catch (err) {
-    alert("⚠️ 이미지 생성 중 오류가 발생했습니다.");
-  } finally {
-    setIsLoading(false);
-  }
-};
+    // 현재는 기본 크레딧 25 기준으로, 이미지 생성 최대 8회로 고정 처리
+    // TODO: Stability API의 사용자 크레딧 조회 기능 연동 시 잔여 크레딧 기반으로 수정 예정
+    const usageKey = usageCount_${email};
+    const currentCount = parseInt(localStorage.getItem(usageKey) || "0", 10);
