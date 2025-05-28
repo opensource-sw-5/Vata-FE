@@ -1,13 +1,15 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "../api"; // 공통 axios 인스턴스 사용
+
+interface ImageResponse {
+  images: string[];
+}
 
 const Storage = () => {
   const navigate = useNavigate();
-
-  const savedImages = [
-    "https://via.placeholder.com/300x300.png?text=Avatar+1",
-    "https://via.placeholder.com/300x300.png?text=Avatar+2",
-    "https://via.placeholder.com/300x300.png?text=Avatar+3",
-  ];
+  const email = localStorage.getItem("email") || "";
+  const [savedImages, setSavedImages] = useState<string[]>([]);
 
   const maxSlots = 8;
   const imageSlots = Array.from({ length: maxSlots }, (_, i) => savedImages[i] || null);
@@ -15,9 +17,21 @@ const Storage = () => {
   const handleDownload = (url: string, index: number) => {
     const link = document.createElement("a");
     link.href = url;
-    link.download = `avatar_${index + 1}.png`; // 백틱 사용
+    link.download = `avatar_${index + 1}.png`;
     link.click();
   };
+
+  useEffect(() => {
+    const fetchImages = async () => {
+      try {
+        const response = await axios.get<ImageResponse>("/api/profile/images");
+        setSavedImages(response.data.images); // API에서 image list 받기
+      } catch (err) {
+        console.error("이미지 불러오기 실패", err);
+      }
+    };
+    fetchImages();
+  }, []);
 
   return (
     <div className="w-screen min-h-screen bg-gradient-to-br from-yellow-100 to-pink-100 py-16 flex flex-col items-center">
