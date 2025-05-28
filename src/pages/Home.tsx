@@ -1,26 +1,23 @@
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // axios로 API 요청을 보냄
+import axios from "../api/axios"; // 공통 axios 인스턴스 사용
 
 const Home = () => {
   const navigate = useNavigate();
-  const email = sessionStorage.getItem("email"); // sessionStorage로 이메일 가져오기
-  const token = sessionStorage.getItem("accessToken"); // sessionStorage로 토큰 가져오기
+  const email = sessionStorage.getItem("email");
+  const token = sessionStorage.getItem("accessToken");
 
-  // 로그인 상태 확인 (토큰이 없으면 로그인 페이지로 리다이렉트)
-  if (!token) {
+  if (!token || !email) {
     navigate("/login");
   }
 
   const handleLogout = async () => {
     try {
-      // 백엔드 로그아웃 API 호출
-      await axios.get("http://localhost:8080/api/auth/logout");
+      await axios.get("/api/auth/logout"); // baseURL 자동 적용
 
-      // 로그아웃 후 세션 삭제
       sessionStorage.removeItem("email");
       sessionStorage.removeItem("accessToken");
 
-      navigate("/login"); // 로그아웃 후 로그인 페이지로 리다이렉트
+      navigate("/");
     } catch (err) {
       console.error("로그아웃 실패", err);
     }
