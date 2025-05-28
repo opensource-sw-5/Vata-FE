@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios"; // axios import
+import axios from "../api"; // 공통 axios 인스턴스 사용
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -10,8 +10,8 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
-  const [error, setError] = useState<string | null>(null); // 에러 메시지 상태 추가
-  const [isLoading, setIsLoading] = useState(false); // 로딩 상태 추가
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -21,7 +21,6 @@ const Signup = () => {
     e.preventDefault();
     setIsLoading(true);
 
-    // 비밀번호 확인
     if (form.password !== form.confirmPassword) {
       setError("비밀번호가 일치하지 않습니다.");
       setIsLoading(false);
@@ -29,38 +28,28 @@ const Signup = () => {
     }
 
     try {
-      // 백엔드 회원가입 API 호출
-      const response = await axios.post(
-        "http://localhost:8080/api/auth/signup",
-        {
-          username: form.email, // 백엔드에서 username은 이메일로 처리됨
-          password: form.password,
-          nickname: form.name,
-          email: form.email,
-        }
-      );
+      const response = await axios.post("/api/auth/signup", {
+        email: form.email,
+        password: form.password,
+        name: form.name,
+      });
 
-      // response.data의 타입을 명시적으로 설정
-      const data = response.data as { message: string }; // response.data에 message 속성이 있다고 가정
+      const message =
+        typeof response.data === "string"
+          ? response.data
+          : (response.data as { message?: string }).message || "회원가입이 완료되었습니다.";
 
-      // 백엔드에서 반환된 응답에서 message 사용
-      if (data.message) {
-        alert(data.message); // 예: "회원가입이 완료되었습니다."
-      } else {
-        alert("회원가입이 완료되었습니다. 로그인해주세요!");
-      }
-
-      navigate("/login"); // 로그인 페이지로 이동
+      alert(message);
+      navigate("/login");
     } catch (err: any) {
-      // 서버에서 반환한 에러 메시지가 있을 경우 그 메시지를 사용
-      if (err.response && err.response.data && err.response.data.message) {
-        setError(err.response.data.message); // 백엔드에서 제공하는 오류 메시지 표시
-      } else {
-        setError("회원가입에 실패했습니다. 다시 시도해주세요."); // 기본 오류 메시지
-      }
+      const errorMessage =
+        typeof err.response?.data === "string"
+          ? err.response.data
+          : err.response?.data?.message || "회원가입에 실패했습니다. 다시 시도해주세요.";
+      setError(errorMessage);
       console.error(err);
     } finally {
-      setIsLoading(false); // 로딩 상태 종료
+      setIsLoading(false);
     }
   };
 
@@ -72,7 +61,7 @@ const Signup = () => {
       >
         <h2 className="text-3xl font-bold text-center text-pink-600">회원가입</h2>
 
-        {error && <p className="text-red-500 text-center">{error}</p>} {/* 에러 메시지 표시 */}
+        {error && <p className="text-red-500 text-center">{error}</p>}
 
         <input
           type="text"
@@ -97,7 +86,7 @@ const Signup = () => {
         <input
           type="password"
           name="password"
-          placeholder="비밀번호"
+          placeholder="비밀번호 (최소 8자 이상)"
           value={form.password}
           onChange={handleChange}
           className="border rounded px-4 py-2"
@@ -117,9 +106,9 @@ const Signup = () => {
         <button
           type="submit"
           className="bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 rounded"
-          disabled={isLoading} // 로딩 중 버튼 비활성화
+          disabled={isLoading}
         >
-          {isLoading ? "가입 중..." : "가입하기"} {/* 로딩 상태 표시 */}
+          {isLoading ? "가입 중..." : "가입하기"}
         </button>
       </form>
     </div>
