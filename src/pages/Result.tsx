@@ -6,7 +6,7 @@ const Result = () => {
   const imageUrl = localStorage.getItem("generatedImageUrl") ?? "";
   const email = localStorage.getItem("email") || "";
 
-  // 현재는 기본 크레딧 25 기준으로, 이미지 생성 최대 8회로 고정 처리 중입니다.
+  // ⚠️ 현재는 기본 크레딧 25 기준으로, 이미지 생성 최대 8회로 고정 처리 중입니다.
   // TODO: 잔여 크레딧 기반으로 수정 예정 (Stability API 사용자 크레딧 조회 연동 시)
   const usageKey = `usageCount_${email}`;
   const usageCount = parseInt(localStorage.getItem(usageKey) || "0", 10);
