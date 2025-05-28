@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios from "../api/axios";
 
 const hobbyOptions = [
   "독서", "운동", "게임", "그림 그리기", "음악 감상",
@@ -15,10 +15,10 @@ const mbtiOptions = [
 const characterTypeOptions = ["CHARACTER", "AVATAR", "ANIMAL"];
 
 const styleTypeOptions: string[] = [
-  "3d-model", "analog-film", "anime", "cinematic", "comic-book",
-  "digital-art", "enhance", "fantasy-art", "isometric", "line-art",
-  "low-poly", "modeling-compound", "neon-punk", "origami",
-  "photographic", "pixel-art", "tile-texture"
+  "MODEL_3D", "ANALOG_FILM", "ANIME", "CINEMATIC", "COMIC_BOOK",
+  "DIGITAL_ART", "ENHANCE", "FANTASY_ART", "ISOMETRIC", "LINE_ART",
+  "LOW_POLY", "MODELING_COMPOUND", "NEON_PUNK", "ORIGAMI",
+  "PHOTOGRAPHIC", "PIXEL_ART", "TILE_TEXTURE"
 ];
 
 const Input = () => {
@@ -41,7 +41,7 @@ const Input = () => {
       alert("로그인이 필요합니다.");
       navigate("/login");
     } else if (!token) {
-      alert("Access Token을 먼저 설정해주세요.");
+      alert("⚠️ Access Token이 발급되지 않았습니다. 먼저 토큰을 설정해주세요.");
       navigate("/token");
     }
   }, [navigate]);
@@ -54,8 +54,6 @@ const Input = () => {
     e.preventDefault();
 
     const email = localStorage.getItem("email") || "";
-    const token = localStorage.getItem("accessToken") || "";
-
     const usageKey = `usageCount_${email}`;
     const currentCount = parseInt(localStorage.getItem(usageKey) || "0", 10);
 
@@ -67,29 +65,19 @@ const Input = () => {
     try {
       const hobbyToSend = form.hobby === "직접입력" ? form.otherHobby : form.hobby;
 
-      const promptResponse = await axios.post("http://localhost:8080/api/profile/generate", {
+      const promptResponse = await axios.post("/api/profile/generate", {
         gender: form.gender,
         mbti: form.mbti,
         hobby: hobbyToSend,
         characterType: form.characterType,
         styleType: form.styleType,
         etc: form.etc,
-      }, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
       });
 
       const generatedPrompt = promptResponse.data;
 
-      const imageResponse = await axios.post("http://localhost:8080/api/profile/generate", {
+      const imageResponse = await axios.post("/api/profile/generate", {
         prompt: generatedPrompt,
-      }, {
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json"
-        }
       });
 
       const imageUrl = (imageResponse.data as { imageUrl: string }).imageUrl;
@@ -98,9 +86,14 @@ const Input = () => {
       localStorage.setItem(usageKey, (currentCount + 1).toString());
 
       navigate("/result");
-    } catch (err) {
-      alert("⚠️ 이미지 생성 중 오류가 발생했습니다.");
-      console.error(err);
+    } catch (err: any) {
+      const errorMessage =
+        typeof err.response?.data === "string"
+          ? err.response.data
+          : err.response?.data?.message || "⚠️ 이미지 생성 중 오류가 발생했습니다.";
+
+      alert(errorMessage);
+      console.error("Input Error:", err);
     }
   };
 
