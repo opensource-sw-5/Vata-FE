@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../api"; // 인터셉터 포함된 인스턴스
+import axiosInstance from "../api/axios"; // 인터셉터 포함된 인스턴스
 
 const hobbyOptions = [
   "독서", "운동", "게임", "그림 그리기", "음악 감상",
@@ -60,7 +60,7 @@ const Input = () => {
     try {
       const hobbyToSend = form.hobby === "직접입력" ? form.otherHobby : form.hobby;
 
-      const promptResponse = await axios.post("/api/profile/generate", {
+      const promptResponse = await axiosInstance.post("/api/profile/generate", {
         gender: form.gender,
         mbti: form.mbti,
         hobby: hobbyToSend,
