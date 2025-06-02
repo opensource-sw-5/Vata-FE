@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../api";
+import axiosInstance from "../api/axios";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ const Signup = () => {
     }
 
     try {
-      const response = await axios.post("/api/auth/signup", {
+      const response = await axiosInstance.post("/api/auth/signup", {
         email: form.email,
         password: form.password,
         name: form.name,
@@ -117,3 +117,4 @@ const Signup = () => {
 };
 
 export default Signup;
+
