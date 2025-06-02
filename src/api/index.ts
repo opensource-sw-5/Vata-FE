@@ -1,15 +1,20 @@
-import axios from "axios";
+import instance from "./axios";
 
-const instance = axios.create({
-  baseURL: "http://localhost:8080",
-  withCredentials: true,
-});
+const skipAuthUrls = [
+  "/api/auth/signup",
+  "/api/auth/login",
+  "/api/user/access-key",
+  "/api/auth/logout"
+];
 
 instance.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken");
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
+  const isSkip = skipAuthUrls.some((url) => config.url?.includes(url));
+
+  if (!isSkip) {
+    const token =
+      localStorage.getItem("accessKey") || sessionStorage.getItem("accessKey");
   }
+
   return config;
 });
 
