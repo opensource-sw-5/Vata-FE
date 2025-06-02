@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../api";
+import axiosInstance from "../api/axios";
 
 interface ImageItem {
   profileId: number;
@@ -43,7 +43,7 @@ const Storage = () => {
 
     const fetchImages = async () => {
       try {
-        const response = await axios.get<ImageResponse>("/api/profile/list", {
+        const response = await axiosInstance.get<ImageResponse>("/api/profile/list", {
           params: { page: 0, size: maxSlots },
         });
 
@@ -118,4 +118,3 @@ const Storage = () => {
 };
 
 export default Storage;
-
