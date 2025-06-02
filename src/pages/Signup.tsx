@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../api/axios";
+import axiosInstance from "../api/api";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -117,4 +117,3 @@ const Signup = () => {
 };
 
 export default Signup;
-

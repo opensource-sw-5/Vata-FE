@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../api/axios"; // 인터셉터 포함된 인스턴스 사용
+import axiosInstance from "../api/api"; // 인터셉터 포함된 인스턴스 사용
 
 const Login = () => {
   const navigate = useNavigate();

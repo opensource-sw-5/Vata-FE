@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../api/axios";
+import axiosInstance from "../api/api";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -80,4 +80,3 @@ const Home = () => {
 };
 
 export default Home;
-

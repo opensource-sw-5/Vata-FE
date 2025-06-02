@@ -1,4 +1,4 @@
-import instance from "./axios";
+import instance from "./api";
 
 const skipAuthUrls = [
   "/api/auth/signup",
