@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../api/axios";
+import axios from "../api"; // 인터셉터 포함된 인스턴스
 
 const hobbyOptions = [
   "독서", "운동", "게임", "그림 그리기", "음악 감상",
@@ -34,15 +34,10 @@ const Input = () => {
   });
 
   useEffect(() => {
-    const email = localStorage.getItem("email");
-    const token = localStorage.getItem("accessToken");
-
-    if (!email) {
-      alert("로그인이 필요합니다.");
+    const email = sessionStorage.getItem("email");
+    if (!email || typeof email !== "string" || email.trim() === "") {
+      alert("로그인이 필요합니다!");
       navigate("/login");
-    } else if (!token) {
-      alert("⚠️ Access Token이 발급되지 않았습니다. 먼저 토큰을 설정해주세요.");
-      navigate("/token");
     }
   }, [navigate]);
 
@@ -53,12 +48,12 @@ const Input = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const email = localStorage.getItem("email") || "";
+    const email = sessionStorage.getItem("email") || "";
     const usageKey = `usageCount_${email}`;
     const currentCount = parseInt(localStorage.getItem(usageKey) || "0", 10);
 
     if (currentCount >= 8) {
-      alert("⚠️ 더 이상 이미지를 생성할 수 없습니다. (최대 8회)");
+      alert("⚠️ 더 이상 이미지를 생성할 수 없습니다! (최대 8회)");
       return;
     }
 
@@ -74,26 +69,30 @@ const Input = () => {
         etc: form.etc,
       });
 
-      const generatedPrompt = promptResponse.data;
-
-      const imageResponse = await axios.post("/api/profile/generate", {
-        prompt: generatedPrompt,
-      });
-
-      const imageUrl = (imageResponse.data as { imageUrl: string }).imageUrl;
+      const imageUrl = (promptResponse.data as { imageUrl: string }).imageUrl;
 
       localStorage.setItem("generatedImageUrl", imageUrl);
       localStorage.setItem(usageKey, (currentCount + 1).toString());
 
       navigate("/result");
     } catch (err: any) {
-      const errorMessage =
-        typeof err.response?.data === "string"
-          ? err.response.data
-          : err.response?.data?.message || "⚠️ 이미지 생성 중 오류가 발생했습니다.";
+      console.error("Input Error:", err);
+
+      let errorMessage = "⚠️ 이미지 생성 중 오류가 발생했습니다!";
+
+      if (err.response) {
+        if (typeof err.response.data === "string") {
+          errorMessage = err.response.data;
+        } else if (err.response.data?.message) {
+          errorMessage = `⚠️ ${err.response.data.message}`;
+        } else {
+          errorMessage = `⚠️ 상태 코드: ${err.response.status}`;
+        }
+      } else if (err.message) {
+        errorMessage = `⚠️ ${err.message}`;
+      }
 
       alert(errorMessage);
-      console.error("Input Error:", err);
     }
   };
 
@@ -168,3 +167,4 @@ const Input = () => {
 };
 
 export default Input;
+
