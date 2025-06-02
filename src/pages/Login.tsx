@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../api"; // 인터셉터 포함된 인스턴스 사용
+import axiosInstance from "../api/axios"; // 인터셉터 포함된 인스턴스 사용
 
 const Login = () => {
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await axios.post("/api/auth/login", {
+      const response = await axiosInstance.post("/api/auth/login", {
         email: form.email,
         password: form.password,
       }, {

@@ -4,7 +4,7 @@ const skipAuthUrls = [
   "/api/auth/signup",
   "/api/auth/login",
   "/api/user/access-key",
-  "/api/auth/logout"
+  "/api/auth/logout",
 ];
 
 instance.interceptors.request.use((config) => {
@@ -13,6 +13,10 @@ instance.interceptors.request.use((config) => {
   if (!isSkip) {
     const token =
       localStorage.getItem("accessKey") || sessionStorage.getItem("accessKey");
+
+    if (token && config.headers) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
   }
 
   return config;

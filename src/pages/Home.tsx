@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import axios from "../api";
+import axiosInstance from "../api/axios";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -9,7 +9,7 @@ const Home = () => {
 
   const handleLogout = async () => {
     try {
-      await axios.post("/api/auth/logout");
+      await axiosInstance.post("/api/auth/logout");
       sessionStorage.removeItem("email");
       navigate("/");
     } catch (err) {
@@ -80,3 +80,4 @@ const Home = () => {
 };
 
 export default Home;
+
