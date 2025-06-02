@@ -1,15 +1,26 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../api"; // 공통 axios 인스턴스 사용
+import axios from "../api";
+
+interface ImageItem {
+  profileId: number;
+  profileImageUrl: string;
+  createdAt: string;
+}
 
 interface ImageResponse {
-  images: string[];
+  content: ImageItem[];
+  page: number;
+  size: number;
+  totalPages: number;
+  totalElements: number;
+  hasNext: boolean;
 }
 
 const Storage = () => {
   const navigate = useNavigate();
-  const email = localStorage.getItem("email") || "";
-  const [savedImages, setSavedImages] = useState<string[]>([]);
+  const email = sessionStorage.getItem("email") || "";
+  const [savedImages, setSavedImages] = useState<ImageItem[]>([]);
 
   const maxSlots = 8;
   const imageSlots = Array.from({ length: maxSlots }, (_, i) => savedImages[i] || null);
@@ -17,21 +28,47 @@ const Storage = () => {
   const handleDownload = (url: string, index: number) => {
     const link = document.createElement("a");
     link.href = url;
-    link.download = `avatar_${index + 1}.png`;
+    link.download = `avatar_${index + 1}.jpg`;
     link.click();
   };
 
   useEffect(() => {
+    if (!email.trim()) {
+      alert("로그인이 필요합니다!");
+      navigate("/login");
+      return;
+    }
+
+    let isMounted = true;
+
     const fetchImages = async () => {
       try {
-        const response = await axios.get<ImageResponse>("/api/profile/images");
-        setSavedImages(response.data.images); // API에서 image list 받기
-      } catch (err) {
-        console.error("이미지 불러오기 실패", err);
+        const response = await axios.get<ImageResponse>("/api/profile/list", {
+          params: { page: 0, size: maxSlots },
+        });
+
+        if (isMounted && Array.isArray(response.data.content)) {
+          setSavedImages(response.data.content);
+        }
+      } catch (err: any) {
+        if (!isMounted) return;
+
+        if (err?.response?.status === 401 || err?.response?.status === 403) {
+          alert("⚠️ 인증 정보가 유효하지 않습니다. 다시 로그인해주세요.");
+          sessionStorage.removeItem("email");
+          navigate("/login");
+        } else {
+          alert("⚠️ 이미지를 불러오는 데 실패하였습니다!");
+          console.error("이미지 불러오기 오류:", err);
+        }
       }
     };
+
     fetchImages();
-  }, []);
+    return () => {
+      isMounted = false;
+    };
+  }, [email, navigate]);
 
   return (
     <div className="w-screen min-h-screen bg-gradient-to-br from-yellow-100 to-pink-100 py-16 flex flex-col items-center">
@@ -46,13 +83,16 @@ const Storage = () => {
             {img ? (
               <>
                 <img
-                  src={img}
+                  src={img.profileImageUrl}
                   alt={`아바타 ${index + 1}`}
                   className="w-full h-[200px] object-cover rounded-lg"
                 />
+                <p className="text-xs text-gray-500 mt-2">
+                  {new Date(img.createdAt).toLocaleString()}
+                </p>
                 <button
-                  onClick={() => handleDownload(img, index)}
-                  className="mt-4 bg-pink-500 hover:bg-pink-600 text-white font-semibold py-1.5 px-6 rounded-full"
+                  onClick={() => handleDownload(img.profileImageUrl, index)}
+                  className="mt-2 bg-pink-500 hover:bg-pink-600 text-white font-semibold py-1.5 px-6 rounded-full"
                 >
                   다운로드
                 </button>
@@ -78,3 +118,4 @@ const Storage = () => {
 };
 
 export default Storage;
+
