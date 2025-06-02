@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../api"; // 공통 axios 인스턴스 사용
+import axios from "../api";
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -20,9 +20,10 @@ const Signup = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     if (form.password !== form.confirmPassword) {
-      setError("비밀번호가 일치하지 않습니다.");
+      setError("⚠️ 비밀번호가 일치하지 않습니다!");
       setIsLoading(false);
       return;
     }
@@ -37,7 +38,7 @@ const Signup = () => {
       const message =
         typeof response.data === "string"
           ? response.data
-          : (response.data as { message?: string }).message || "회원가입이 완료되었습니다.";
+          : (response.data as { message?: string }).message || "회원가입이 완료되었습니다!";
 
       alert(message);
       navigate("/login");
@@ -45,7 +46,7 @@ const Signup = () => {
       const errorMessage =
         typeof err.response?.data === "string"
           ? err.response.data
-          : err.response?.data?.message || "회원가입에 실패했습니다. 다시 시도해주세요.";
+          : err.response?.data?.message || "회원가입에 실패했습니다. 다시 시도해주세요!";
       setError(errorMessage);
       console.error(err);
     } finally {

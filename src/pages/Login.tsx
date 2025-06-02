@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../api/axios"; // 수정된 부분
+import axios from "../api"; // 인터셉터 포함된 인스턴스 사용
 
 const Login = () => {
   const navigate = useNavigate();
@@ -23,16 +23,19 @@ const Login = () => {
       const response = await axios.post("/api/auth/login", {
         email: form.email,
         password: form.password,
+      }, {
+        withCredentials: true,
       });
 
       const token = (response.data as { token: string }).token;
-      sessionStorage.setItem("accessToken", token);
+
       sessionStorage.setItem("email", form.email);
+      localStorage.setItem("accessKey", token); // accessToken → accessKey로 통일
 
       alert("로그인에 성공하였습니다!");
       navigate("/");
     } catch (err) {
-      setError("이메일 또는 비밀번호가 일치하지 않습니다. 다시 시도해주세요.");
+      setError("이메일 또는 비밀번호가 일치하지 않습니다. 다시 시도해주세요!");
     } finally {
       setLoading(false);
     }
@@ -77,4 +80,3 @@ const Login = () => {
 };
 
 export default Login;
-
