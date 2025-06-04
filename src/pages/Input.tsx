@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../api/api"; // 인터셉터 포함된 인스턴스
+import axiosInstance from "../api/axios";
 
 const hobbyOptions = [
   "독서", "운동", "게임", "그림 그리기", "음악 감상",
@@ -23,6 +23,7 @@ const styleTypeOptions: string[] = [
 
 const Input = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false); // 로딩 상태 추가
   const [form, setForm] = useState({
     gender: "",
     mbti: "",
@@ -47,13 +48,15 @@ const Input = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     const email = sessionStorage.getItem("email") || "";
     const usageKey = `usageCount_${email}`;
     const currentCount = parseInt(localStorage.getItem(usageKey) || "0", 10);
 
     if (currentCount >= 8) {
-      alert("⚠️ 더 이상 이미지를 생성할 수 없습니다! (최대 8회)");
+      alert("더 이상 이미지를 생성할 수 없습니다! (최대 8회)");
+      setLoading(false);
       return;
     }
 
@@ -78,21 +81,23 @@ const Input = () => {
     } catch (err: any) {
       console.error("Input Error:", err);
 
-      let errorMessage = "⚠️ 이미지 생성 중 오류가 발생했습니다!";
+      let errorMessage = "이미지 생성 중 오류가 발생했습니다!";
 
       if (err.response) {
         if (typeof err.response.data === "string") {
           errorMessage = err.response.data;
         } else if (err.response.data?.message) {
-          errorMessage = `⚠️ ${err.response.data.message}`;
+          errorMessage = err.response.data.message;
         } else {
-          errorMessage = `⚠️ 상태 코드: ${err.response.status}`;
+          errorMessage = `상태 코드: ${err.response.status}`;
         }
       } else if (err.message) {
-        errorMessage = `⚠️ ${err.message}`;
+        errorMessage = err.message;
       }
 
       alert(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -157,9 +162,12 @@ const Input = () => {
 
         <button
           type="submit"
-          className="bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 rounded"
+          disabled={loading}
+          className={`text-white font-semibold py-2 rounded ${
+            loading ? "bg-gray-400" : "bg-pink-500 hover:bg-pink-600"
+          }`}
         >
-          프롬프트 생성하기
+          {loading ? "로딩 중..." : "프롬프트 생성하기"}
         </button>
       </form>
     </div>
