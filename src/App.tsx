@@ -5,6 +5,7 @@ import Login from "./pages/Login";
 import Input from "./pages/Input";
 import Result from "./pages/Result";
 import Storage from "./pages/Storage";
+import TokenGuide from "./pages/TokenGuide"; // 추가된 부분
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/input" element={<Input />} />
         <Route path="/result" element={<Result />} />
         <Route path="/storage" element={<Storage />} />
+        <Route path="/token-guide" element={<TokenGuide />} /> {/* 추가된 라우트 */}
       </Routes>
     </Router>
   );

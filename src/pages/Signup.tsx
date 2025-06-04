@@ -10,6 +10,9 @@ const Signup = () => {
     password: "",
     confirmPassword: "",
   });
+  const [accessToken, setAccessToken] = useState("");
+  const [tokenVerified, setTokenVerified] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -17,17 +20,43 @@ const Signup = () => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleTokenVerification = async () => {
+    if (!accessToken) {
+      setError("⚠️ Access Token을 입력해주세요!");
+      return;
+    }
+    setIsVerifying(true);
+    setError(null);
+    try {
+      const response = await axiosInstance.post("/api/token/verify", { token: accessToken });
+      if (response.data === "VALID") {
+        setTokenVerified(true);
+        alert("✅ Access Token 검증 완료!");
+      } else {
+        setError("⚠️ 유효하지 않은 Access Token입니다.");
+      }
+    } catch (err) {
+      setError("⚠️ 서버 오류: Access Token 검증 실패");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
     setError(null);
 
     if (form.password !== form.confirmPassword) {
       setError("⚠️ 비밀번호가 일치하지 않습니다!");
-      setIsLoading(false);
       return;
     }
 
+    if (!tokenVerified) {
+      setError("⚠️ Access Token 검증을 먼저 완료해주세요!");
+      return;
+    }
+
+    setIsLoading(true);
     try {
       const response = await axiosInstance.post("/api/auth/signup", {
         email: form.email,
@@ -104,10 +133,42 @@ const Signup = () => {
           required
         />
 
+        <div className="flex items-center gap-2">
+          <input
+            type="text"
+            placeholder="Access Token 입력"
+            value={accessToken}
+            onChange={(e) => setAccessToken(e.target.value)}
+            className="border rounded px-4 py-2 flex-1"
+            required
+          />
+          <button
+            type="button"
+            onClick={handleTokenVerification}
+            className="px-3 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600"
+            disabled={isVerifying}
+          >
+            {isVerifying ? "검증 중..." : "검증"}
+          </button>
+        </div>
+
+        <p
+          className="text-sm text-blue-600 hover:underline cursor-pointer -mt-3"
+          onClick={() => navigate("/token-guide")}
+        >
+          Access Token을 발급받는 방법
+        </p>
+
         <button
           type="submit"
-          className="bg-pink-500 hover:bg-pink-600 text-white font-semibold py-2 rounded"
-          disabled={isLoading}
+          className={`text-white font-semibold py-2 rounded ${
+            isLoading
+              ? "bg-gray-300"
+              : tokenVerified
+              ? "bg-pink-500 hover:bg-pink-600"
+              : "bg-gray-300 cursor-not-allowed"
+          }`}
+          disabled={isLoading || !tokenVerified}
         >
           {isLoading ? "가입 중..." : "가입하기"}
         </button>
