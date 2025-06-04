@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../api/axios";
+import axiosInstance from "../api/api";
 
 const hobbyOptions = [
   "독서", "운동", "게임", "그림 그리기", "음악 감상",
