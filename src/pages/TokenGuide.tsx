@@ -6,23 +6,45 @@ const TokenGuide = () => {
 
   const steps = [
     {
-      title: "Step 1. Stability.ai 사이트 접속 후 좌측 하단의 \"Use API\" 클릭",
+      title: (
+        <>
+          Step 1.{" "}
+          <a
+            href="https://stability.ai/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline hover:text-blue-800"
+          >
+            https://stability.ai/
+          </a>{" "}
+          에 접속한 후, 좌측 하단의 <strong>"Use API"</strong> 버튼 클릭
+        </>
+      ),
       image: "/images/step1.png",
       alt: "Use API 버튼 위치",
     },
     {
-      title:
-        "Step 2. 우측 상단의 \"Login\" 버튼 클릭 후 로그인 진행 (로그인이 안되어 있다면 회원가입 먼저 진행)",
+      title: (
+        <>
+          Step 2. 우측 상단의 <strong>"Login"</strong> 버튼 클릭 후 로그인 진행 (
+          <span className="text-gray-600">로그인이 안되어 있다면 회원가입 먼저 진행</span>)
+        </>
+      ),
       image: "/images/step2.png",
       alt: "Login 버튼 위치",
     },
     {
-      title: "Step 3. 로그인 후 우측 상단의 프로필 아이콘 클릭",
+      title: <>Step 3. 로그인 후 우측 상단의 <strong>프로필 아이콘</strong> 클릭</>,
       image: "/images/step3.png",
       alt: "프로필 아이콘 위치",
     },
     {
-      title: "Step 4. \"Create API Key\"를 클릭한 뒤 발급된 Access Token 복사",
+      title: (
+        <>
+          Step 4. <strong>"Create API Key"</strong> 클릭 후, 발급된 Access Token을{" "}
+          <strong>복사</strong>
+        </>
+      ),
       image: "/images/step4.png",
       alt: "API Key 복사 위치",
     },
