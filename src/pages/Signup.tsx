@@ -67,6 +67,7 @@ const Signup = () => {
         email: form.email,
         password: form.password,
         name: form.name,
+        stabilityApiAccessToken: accessToken,
       });
 
       const message =
@@ -148,27 +149,33 @@ const Signup = () => {
             required
           />
           <button
-            type="button"
-            onClick={handleTokenVerification}
-            className="px-3 py-2 text-sm text-white bg-blue-500 rounded hover:bg-blue-600"
-            disabled={isVerifying}
+              type="button"
+              onClick={handleTokenVerification}
+              className="px-3 py-2 text-sm text-white rounded
+             bg-blue-500 hover:bg-blue-600
+             disabled:bg-gray-400 disabled:cursor-not-allowed"
+              disabled={isVerifying || tokenVerified}
           >
-            {isVerifying ? "검증 중..." : "검증"}
+            {isVerifying
+                ? "검증 중..."
+                : tokenVerified
+                    ? "검증 완료"
+                    : "검증"}
           </button>
         </div>
 
         <p
-          className="text-sm text-blue-600 hover:underline cursor-pointer -mt-3"
-          onClick={() => navigate("/token-guide")}
+            className="text-sm text-blue-600 hover:underline cursor-pointer -mt-3"
+            onClick={() => navigate("/token-guide")}
         >
           Access Token을 발급받는 방법
         </p>
 
         <button
-          type="submit"
-          className={`text-white font-semibold py-2 rounded ${
-            isLoading
-              ? "bg-gray-300"
+            type="submit"
+            className={`text-white font-semibold py-2 rounded ${
+                isLoading
+                    ? "bg-gray-300"
               : tokenVerified
               ? "bg-pink-500 hover:bg-pink-600"
               : "bg-gray-300 cursor-not-allowed"
