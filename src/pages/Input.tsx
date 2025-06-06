@@ -74,10 +74,7 @@ const Input = () => {
 
       const imageUrl = (promptResponse.data as { imageUrl: string }).imageUrl;
 
-      localStorage.setItem("generatedImageUrl", imageUrl);
-      localStorage.setItem(usageKey, (currentCount + 1).toString());
-
-      navigate("/result");
+      navigate("/result", { state: { imageUrl } });
     } catch (err: any) {
       console.error("Input Error:", err);
 
