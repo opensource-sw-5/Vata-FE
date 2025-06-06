@@ -1,15 +1,12 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import axiosInstance from "../api/api";
 
 const Result = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [imageUrl, setImageUrl] = useState<string>("");
-
-  const email = sessionStorage.getItem("email") || "";
-  const usageKey = `usageCount_${email}`;
-  const usageCount = parseInt(localStorage.getItem(usageKey) || "0", 10);
-  const remaining = 8 - usageCount;
+  const [remaining, setRemaining] = useState<number>(0);
 
   useEffect(() => {
     const stateImage = location.state?.imageUrl;
@@ -23,6 +20,20 @@ const Result = () => {
       alert("이미지가 존재하지 않습니다!");
       navigate("/input");
     }
+
+    const fetchCredits = async () => {
+      try {
+        const res = await axiosInstance.get("/api/profile/credits");
+        const credits = res.data?.credits ?? 0;
+        const calculatedRemaining = Math.floor(credits / 3);
+        setRemaining(calculatedRemaining);
+      } catch (error) {
+        console.error("크레딧 조회 실패", error);
+        setRemaining(0);
+      }
+    };
+
+    fetchCredits();
   }, [location.state, navigate]);
 
   const handleDownload = () => {
@@ -46,7 +57,7 @@ const Result = () => {
 
         <p className="text-xl text-gray-700 mb-6">
           남은 이미지 생성 가능 횟수:{" "}
-          <span className="text-pink-500 font-bold text-2xl">{remaining}</span> / 8
+          <span className="text-pink-500 font-bold text-2xl">{remaining}</span>
         </p>
 
         <div className="flex gap-6">
