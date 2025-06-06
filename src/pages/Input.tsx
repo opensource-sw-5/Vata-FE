@@ -1,6 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import axiosInstance from "../api/api";
+import {HomeIcon} from "@heroicons/react/24/solid";
+
+const containsKorean = (text: string) => /[가-힣]/.test(text);
+
 
 const hobbyOptions = [
     "독서", "운동", "게임", "그림 그리기", "음악 감상",
@@ -24,6 +28,7 @@ const styleTypeOptions: string[] = [
 const Input = () => {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false); // 로딩 상태 추가
+    const [credits, setCredits] = useState<number | null>(null);
     const [form, setForm] = useState({
         gender: "",
         mbti: "",
@@ -40,6 +45,18 @@ const Input = () => {
             alert("로그인이 필요합니다!");
             navigate("/login");
         }
+
+        const fetchCredits = async () => {
+            try {
+                const res = await axiosInstance.get("/api/profile/credits");
+                setCredits(res.data?.credits ?? 0);
+            } catch (err) {
+                console.error("크레딧 조회 실패", err);
+                setCredits(null);
+            }
+        };
+
+        fetchCredits();
     }, [navigate]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -51,7 +68,6 @@ const Input = () => {
         setLoading(true);
 
         try {
-            // 1. 크레딧 확인
             const creditRes = await axiosInstance.get("/api/profile/credits");
             const credits = creditRes.data?.credits ?? 0;
 
@@ -61,7 +77,18 @@ const Input = () => {
                 return;
             }
 
-            // 2. 프롬프트 전송
+            if (form.hobby === "직접입력" && containsKorean(form.otherHobby)) {
+                alert("직접 입력한 취미는 영어로 작성해주세요.");
+                setLoading(false);
+                return;
+            }
+
+            if (form.etc && containsKorean(form.otherHobby)) {
+                alert("추가 설명 (Etc)은 영어로 작성해주세요.");
+                setLoading(false);
+                return;
+            }
+
             const hobbyToSend = form.hobby === "직접입력" ? form.otherHobby : form.hobby;
 
             const promptResponse = await axiosInstance.post("/api/profile/generate", {
@@ -92,9 +119,26 @@ const Input = () => {
     return (
         <div
             className="w-screen h-screen flex items-center justify-center bg-gradient-to-br from-yellow-100 to-pink-100">
+            <button
+                onClick={() => navigate("/")}
+                className="absolute top-6 left-6 flex items-center gap-1 text-pink-600 hover:text-pink-800 font-semibold"
+            >
+                <HomeIcon className="w-5 h-5"/>
+                <span>홈으로</span>
+            </button>
+
             <form onSubmit={handleSubmit}
                   className="bg-white p-10 rounded-2xl shadow-xl w-[90vw] max-w-[500px] flex flex-col gap-5">
                 <h2 className="text-3xl font-bold text-center text-pink-600">프로필 생성 입력</h2>
+
+                {credits !== null && (
+                    <p className="text-center text-gray-600 text-sm font-medium -mb-2">
+                        남은 생성 가능 횟수:{" "}
+                        <span className="text-pink-500 font-bold">
+              {Math.floor(credits / 3)}
+            </span>
+                    </p>
+                )}
 
                 <select name="gender" value={form.gender} onChange={handleChange} required
                         className="border px-4 py-2 rounded">
@@ -125,11 +169,12 @@ const Input = () => {
                         name="otherHobby"
                         value={form.otherHobby}
                         onChange={handleChange}
-                        placeholder="취미를 직접 입력하세요"
+                        placeholder="Enter your hobby in English"
                         className="border px-4 py-2 rounded"
                         required
                     />
                 )}
+
 
                 <select name="characterType" value={form.characterType} onChange={handleChange} required
                         className="border px-4 py-2 rounded">
@@ -151,9 +196,10 @@ const Input = () => {
                     name="etc"
                     value={form.etc}
                     onChange={handleChange}
-                    placeholder="(선택사항) 예: 따뜻한 분위기의 배경으로 설정해주세요."
+                    placeholder="(Optional) e.g., with dreamy lighting – *English only*"
                     className="border px-4 py-2 rounded"
                 />
+
 
                 <button
                     type="submit"
@@ -162,7 +208,7 @@ const Input = () => {
                         loading ? "bg-gray-400" : "bg-pink-500 hover:bg-pink-600"
                     }`}
                 >
-                    {loading ? "로딩 중..." : "프롬프트 생성하기"}
+                    {loading ? "로딩 중..." : "이미지 생성하기"}
                 </button>
             </form>
         </div>
