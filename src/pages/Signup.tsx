@@ -28,14 +28,17 @@ const Signup = () => {
     setIsVerifying(true);
     setError(null);
     try {
-      const response = await axiosInstance.post("/api/token/verify", { token: accessToken });
+      const response = await axiosInstance.get("/api/auth/token/verify", {
+        params: { apiKey: accessToken },
+      });
+
       if (response.status === 200) {
         setTokenVerified(true);
         alert("✅ Access Token 검증 완료!");
       }
     } catch (err: any) {
-      if (err.response && err.response.status === 401) {
-        setError("⚠️ 유효하지 않은 Access Token입니다.");
+      if (err.response && err.response.status === 400) {
+        setError(`⚠️ ${err.response.data}`);
       } else {
         setError("⚠️ 서버 오류: Access Token 검증 실패");
       }
