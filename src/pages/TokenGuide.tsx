@@ -1,11 +1,12 @@
 import React from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 
-const location = useLocation();
-const formData = location.state?.formData;
-const accessToken = location.state?.accessToken;
 const TokenGuide = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    const formData = location.state?.formData;
+    const accessToken = location.state?.accessToken;
 
     const steps = [
         {
