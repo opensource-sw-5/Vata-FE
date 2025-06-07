@@ -21,7 +21,7 @@ Vata-FE
 │   ├── images/ : Token 발급 가이드용 이미지  
 │   └── index.html : 앱 진입점  
 ├── src/  
-│   ├── api/ : axios 인스턴스 설정  
+│   ├── api/ : axios 인스턴스 설정 및 accessToken.ts
 │   ├── pages/ : 주요 페이지 컴포넌트  
 │   └── index.tsx : React 앱 진입점  
 ├── tailwind.config.js : Tailwind 설정  
@@ -31,7 +31,7 @@ Vata-FE
 ## 🌐 배포
 
 해당 프론트엔드 프로젝트는 "Vercel"을 통해 배포 및 운영되고 있으며, 직접 서비스 상태를 관리하고 있습니다.
-주소: https://vata-fe-1cng.vercel.app/
+[배포 주소 바로가기](https://vata-fe-1cng.vercel.app/) 
 
 ## 🧪 실행 방법 (로컬 테스트용)
 
