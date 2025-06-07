@@ -1,9 +1,15 @@
 import axiosInstance from "./api";
 
-export const verifyAccessToken = async (token: string) => {
-  return await axiosInstance.post("/api/auth/token/verify", { accessToken: token });
+// Access Token 검증 (POST 방식)
+export const verifyAccessToken = async (accessToken: string) => {
+  return await axiosInstance.post("/api/auth/token/verify", {
+    accessToken,
+  });
 };
 
-export const registerAccessToken = async (token: string) => {
-  return await axiosInstance.post("/api/user/access-key", { accessToken: token });
+// Access Token 등록
+export const registerAccessToken = async (accessToken: string) => {
+  return await axiosInstance.post("/api/user/access-key", {
+    accessToken,
+  });
 };
