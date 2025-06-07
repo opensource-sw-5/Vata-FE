@@ -1,35 +1,39 @@
-# Vata-FE (아바타 이미지 생성 웹 서비스)
+# 👤 Vata-FE: 나만의 AI 프로필 이미지 생성기 (Frontend)
 
-Stable Diffusion 기반의 SNS 아바타 생성 프론트엔드 프로젝트입니다.
+Stable Diffusion 기반의 SNS 아바타 생성 웹 서비스의 "프론트엔드 레포지토리"입니다.  
+사용자의 성별, MBTI, 취미 등을 입력하면 AI가 개성 있는 프로필 이미지를 생성해줍니다.
 
-# 기술 스택
+## 🛠️ 기술 스택
 
 - React + TypeScript
-- Tailwind CSS (커스텀 설정 적용)
-- Vite (CRA로 대체 가능)
+- Tailwind CSS (사용자 정의 커스터마이징 포함)
 - React Router v6
-- localStorage 기반 상태 관리
-- .env 기반 Mock 테스트 분기 (REACT_APP_MOCK_MODE)
-- 이미지 placeholder 활용 (via.placeholder.com)
-- [예정] Stable Diffusion API 연동
+- Create React App (CRA) 기반 실행
+- Axios (Interceptor 포함)
+- localStorage 기반 세션 및 토큰 관리
+- 환경 변수 기반 Mock 모드 지원
 
-# 주요 기능
+## 📂 프로젝트 주요 구조
 
--  로그인 / 회원가입 (localStorage 기반 사용자 관리)
--  Access Token 설정 (API 인증을 위한 토큰 설정)
--  프로필 생성 입력 
-   - 성별, MBTI, 취미, 캐릭터, 아바타 선택 및 직접 입력
-   - 기타 설명 추가 (선택사항)
--  생성된 이미지의 결과
-  - 생성된 아바타 이미지 보기
-  - 다운로드, 이미지 재생성, 홈 화면 이동
--  보관함
-  - 생성된 아바타 최대 8개 저장 슬롯
-  - 기본 3개 임시 이미지 표시
-  - [예정] API 연동 시 사용자별 보관함 연동
+Vata-FE
+├── .env : 환경 변수  
+├── public/  
+│   ├── images/ : Token 발급 가이드용 이미지  
+│   └── index.html : 앱 진입점  
+├── src/  
+│   ├── api/ : axios 인스턴스 설정  
+│   ├── pages/ : 주요 페이지 컴포넌트  
+│   └── index.tsx : React 앱 진입점  
+├── tailwind.config.js : Tailwind 설정  
+├── postcss.config.js : PostCSS 설정  
+└── package.json : 프로젝트 의존성 및 스크립트 설정
 
+## 🌐 배포
 
-# 실행 방법
+해당 프론트엔드 프로젝트는 "Vercel"을 통해 배포 및 운영되고 있으며, 직접 서비스 상태를 관리하고 있습니다.
+주소: https://vata-fe-1cng.vercel.app/
+
+## 🧪 실행 방법 (로컬 테스트용)
 
 npm install
 npm start

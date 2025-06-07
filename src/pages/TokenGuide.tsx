@@ -1,5 +1,5 @@
 import React from "react";
-import {useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 const TokenGuide = () => {
     const navigate = useNavigate();
@@ -45,8 +45,11 @@ const TokenGuide = () => {
         {
             title: (
                 <>
-                    Step 4. <strong>"Create API Key"</strong> 클릭 후, 발급된 Access Token을{" "}
-                    <strong>복사</strong>
+                    Step 4. 좌측 상단의 <strong>"API Keys"</strong> 메뉴 클릭 후 <strong>Access Token</strong> 복사
+                    <br />
+                    <span className="text-gray-600">
+                        (발급된 키가 없다면 <strong>"Create API Key"</strong>를 눌러 새로 발급)
+                    </span>
                 </>
             ),
             image: "/images/step4.png",
@@ -55,8 +58,7 @@ const TokenGuide = () => {
     ];
 
     return (
-        <div
-            className="w-screen min-h-screen bg-gradient-to-br from-yellow-100 to-pink-100 p-8 flex flex-col items-center">
+        <div className="w-screen min-h-screen bg-gradient-to-br from-yellow-100 to-pink-100 p-8 flex flex-col items-center">
             <h2 className="text-4xl font-bold text-pink-600 mb-8 text-center drop-shadow">
                 Access Token 발급 가이드
             </h2>
@@ -79,7 +81,7 @@ const TokenGuide = () => {
             <button
                 onClick={() =>
                     navigate("/signup", {
-                        state: {formData, accessToken},
+                        state: { formData, accessToken },
                     })
                 }
                 className="mt-12 px-8 py-3 bg-pink-500 text-white font-semibold rounded-full shadow-lg hover:bg-pink-600 transition"
